@@ -56,6 +56,12 @@ def inspect(config_path, workspace=None):
     chrome = [Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"),
               Path.home() / "Applications/Google Chrome.app/Contents/MacOS/Google Chrome"]
     record("chrome_application", any(path.is_file() for path in chrome), "Google Chrome application")
+    try:
+        import unified_store
+        index, log = unified_store.load(Path(config["vault"]).expanduser())
+        record("vault_catalogs", True, {"notes": len(index), "events": len(log)})
+    except (ImportError, OSError, ValueError) as exc:
+        record("vault_catalogs", False, f"{type(exc).__name__}: {exc}")
     for name in ("f2", "f2-trace"):
         logger = logging.getLogger(name)
         logger.handlers.clear()

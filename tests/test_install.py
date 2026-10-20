@@ -70,14 +70,20 @@ class InstallationTests(unittest.TestCase):
         first, report = self.invoke()
         self.assertEqual(first.returncode, 0, first.stderr)
         self.assertEqual(report["status"], "installed")
+        self.assertEqual(report["vault_catalogs"], "initialized")
+        catalogs = [self.vault / name for name in ("知识总索引.md", "导入总日志.md")]
+        before_catalogs = [path.read_bytes() for path in catalogs]
+        self.assertTrue(all("共 0" in raw.decode("utf-8") for raw in before_catalogs))
         config_path = self.skill / "config.json"
         config = json.loads(config_path.read_text())
         self.assertEqual(config["vault"], str(self.vault))
         self.assertEqual(config["browser_profile"], str(self.profile))
         config["prepare_workers"] = 3
         config_path.write_text(json.dumps(config))
-        second, _ = self.invoke()
+        second, second_report = self.invoke()
         self.assertEqual(second.returncode, 0, second.stderr)
+        self.assertEqual(second_report["vault_catalogs"], "preserved")
+        self.assertEqual([path.read_bytes() for path in catalogs], before_catalogs)
         self.assertEqual(json.loads(config_path.read_text())["prepare_workers"], 3)
         settings = json.loads(settings_file.read_text())
         self.assertEqual(settings["permissions"], {"defaultMode": "default"})
@@ -115,6 +121,23 @@ class InstallationTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertEqual(sentinel.read_text(), "personal installation")
         self.assertFalse((self.skill / ".venv").exists())
+
+    def test_partial_or_symlink_catalogs_are_rejected_without_overwrite(self):
+        index = self.vault / "知识总索引.md"
+        index.write_text("personal index")
+        result, _ = self.invoke()
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(index.read_text(), "personal index")
+        self.assertFalse(self.skill.exists())
+        index.unlink()
+        outside = self.root / "outside.md"
+        outside.write_text("keep outside")
+        index.symlink_to(outside)
+        result, _ = self.invoke()
+        self.assertEqual(result.returncode, 1)
+        self.assertTrue(index.is_symlink())
+        self.assertEqual(outside.read_text(), "keep outside")
+        self.assertFalse(self.skill.exists())
 
 
 if __name__ == "__main__":

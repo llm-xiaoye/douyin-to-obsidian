@@ -46,6 +46,56 @@ def directory(value, label):
     return path
 
 
+def vault_catalogs(vault, *, initialize=False):
+    """Validate existing catalogs; bootstrap only when both documents are absent."""
+    original_path = list(sys.path)
+    try:
+        sys.path.insert(0, str(SOURCE / "scripts"))
+        import unified_store
+    finally:
+        sys.path[:] = original_path
+    if Path(unified_store.__file__).resolve() != (SOURCE / "scripts/unified_store.py").resolve():
+        raise ValueError("总览工具必须来自本次下载的 skill")
+    paths = [vault / unified_store.INDEX_NAME, vault / unified_store.LOG_NAME]
+
+    def inspect_or_create():
+        if any(path.is_symlink() for path in paths):
+            raise ValueError("总览不能是符号链接；未覆盖现有文件")
+        present = [path.exists() for path in paths]
+        if all(present):
+            unified_store.load(vault)
+            return "preserved"
+        if any(present):
+            raise ValueError("两份总览必须同时存在；检测到部分文件，先备份检查，未覆盖")
+        index = unified_store.render_index([])
+        log = unified_store.render_log([])
+        unified_store.validate_rendered(index, log, 0, 0)
+        if not initialize:
+            return "initialization_needed"
+        for path, content in zip(paths, (index, log)):
+            with path.open("xb") as handle:
+                handle.write(content)
+                handle.flush()
+                os.fsync(handle.fileno())
+        unified_store.load(vault)
+        return "initialized"
+
+    if not initialize:
+        return inspect_or_create()
+    import fcntl
+    if (vault / ".knowledge-migration-in-progress.json").exists() or (
+            vault.parent / ".knowledge-migration-in-progress.json").exists():
+        raise ValueError("知识库正在迁移，未初始化总览")
+    descriptor = os.open(vault / ".unified-catalog.lock",
+                         os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW, 0o600)
+    with os.fdopen(descriptor, "a") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        try:
+            return inspect_or_create()
+        finally:
+            fcntl.flock(handle, fcntl.LOCK_UN)
+
+
 def merged_settings(settings, command, previous_command=None):
     result = copy.deepcopy(settings)
     hooks = result.setdefault("hooks", {})
@@ -131,6 +181,7 @@ def install(args):
         digest = hashlib.sha256(command_path.read_bytes()).hexdigest()
         if not previous or digest != previous.get("command_sha256"):
             raise ValueError("已有 /dy 命令不是本安装器上次生成的内容；请先备份并处理冲突")
+    vault_catalogs(vault)
     if not previous:
         destination.mkdir(parents=True, exist_ok=False)
         write_json(metadata_path, {"installation_complete": False})
@@ -149,6 +200,7 @@ def install(args):
         subprocess.run([str(python), "-B", "-m", "pip", "install", "--disable-pip-version-check",
                         "-r", str(REPOSITORY / "requirements.lock.txt")], check=True, stdout=sys.stderr)
         subprocess.run([str(python), "-B", "-m", "pip", "check"], check=True, stdout=sys.stderr)
+    catalog_status = vault_catalogs(vault, initialize=True)
     write_json(destination / "config.json", config)
     if updated_settings != settings and settings_path.exists():
         backup_dir = workspace / ".claude/dy-settings-backups"
@@ -167,6 +219,7 @@ def install(args):
     })
     return {
         "status": "installed", "skill": str(destination), "config": str(destination / "config.json"),
+        "vault_catalogs": catalog_status,
         "dependencies_installed": not args.skip_dependencies,
         "doctor_command": shlex.join([str(python), "-B", str(destination / "scripts/doctor.py")]),
         "next": "执行 doctor_command；通过后在使用该工作区的新 cc-connect 会话发送 /dy 链接",
