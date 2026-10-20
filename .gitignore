@@ -1,0 +1,15 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+.venv-*/
+.cache/
+logs/
+config.json
+.env
+.env.*
+*.cookies.txt
+cookies.json
+*.log
+.dy-install.json
+dy-settings-backups/

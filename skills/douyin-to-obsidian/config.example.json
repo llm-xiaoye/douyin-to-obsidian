@@ -1,0 +1,21 @@
+{
+  "vault": "/absolute/path/to/YourVault",
+  "unified_root_vault": "/absolute/path/to/YourVault",
+  "cache_dir": "/absolute/path/to/YourCache",
+  "python": "/absolute/path/to/installed/skill/.venv/bin/python",
+  "browser": "chrome",
+  "browser_profile": "/absolute/path/to/Chrome/Profile",
+  "auto_browser_recovery": true,
+  "prefer_browser_media": false,
+  "background_detail_first": true,
+  "close_opened_tabs": true,
+  "browser_recovery_wait_seconds": 8,
+  "browser_media_timeout_seconds": 40,
+  "prepare_workers": 2,
+  "browser_cache_dir": "/absolute/path/to/Chrome/Cache_Data",
+  "asr_model": "mlx-community/whisper-small-mlx",
+  "notes_dir": "知识库",
+  "review_state_file": ".dy-review-state.json",
+  "attachments_dir": "附件",
+  "unified_only": true
+}

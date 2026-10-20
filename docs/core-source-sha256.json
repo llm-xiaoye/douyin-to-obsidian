@@ -1,0 +1,19 @@
+{
+  "description": "Business scripts copied unchanged from the working /dy installation.",
+  "sha256": {
+    "auto_route.py": "c2efb7ae7e44ca16561c9c36f7a3d9fab21788d63dccef304f0e19ab72ca6f53",
+    "browser_cache.py": "4c8a5f537ea00400ab14176d98ae93f6bf5fa6ab0106eca5d27d964d32b9f4db",
+    "collect_folders.py": "641fa64d564e7b9a4ea7d9c7bf4b9b922ff6e59981eb58982e61075828e2654d",
+    "douyin_access.py": "076266709a68720de39d517f71fe7bc59c6d9cc9b5daab3fe526bb49d80b1263",
+    "dy.py": "d80825a250041b17e2fb5a8c0f8f5a93bd7eb9219e9c121031e0882a34cee774",
+    "image_posts.py": "855a1bae6dc60a2e96a1e19c223ae281c4d6741fc5178c135182937e5e32c26d",
+    "library.py": "50a60295bcaefd0d3a6788ad1b2e2f3da975bdbef51fdb8e93fd3dd418438d10",
+    "note_assets.py": "085fdd8751578f982d41665200cc1a7a11bce856746b90b08ea6a2d2bfb71734",
+    "ocr_images.swift": "74b386441c10ed9c8619dd524cef3a8c8fce1bdfeee7763badfff25f47cf4b66",
+    "pipeline.py": "81ae4739ce0a3e6150d35df85dd37ed042fa613d95c1dd09e42a6dffde3b938c",
+    "review_log.py": "140c21c24cfc79c096b3bb28471b84fcc404b0470bfaefda279e394519fc65bd",
+    "topic_taxonomy.py": "96cd1a7465ba04cbc7fce5412885fd85fb8f946d16be9b7bafa4160a9df162d8",
+    "unified_catalog.py": "3b4f9ad13b0f1b546dfea89bd109466ac2bf01a43cb201b6be48658c57db85ab",
+    "unified_store.py": "0426f648684e3b08666f7c2500687caad3f3f45ef80b76edb16bcef4391ab539"
+  }
+}
