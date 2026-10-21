@@ -29,7 +29,7 @@ class AutoRouteTests(unittest.TestCase):
     def test_nonmatching_and_explicit_commands_are_unchanged(self):
         for text in ['今天学习什么','https://v.douyin.com/dsEdBl-cXRI/',
                      '/dy 复制打开抖音 https://v.douyin.com/dsEdBl-cXRI/',
-                     '/ki 复制打开抖音 https://v.douyin.com/dsEdBl-cXRI/']:
+                     '/other-command 复制打开抖音 https://v.douyin.com/dsEdBl-cXRI/']:
             self.assertEqual(self.hook(text).stdout,'')
         self.assertEqual(self.hook('复制打开抖音','PostToolUse').stdout,'')
 

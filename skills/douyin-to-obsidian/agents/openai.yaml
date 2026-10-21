@@ -1,4 +1,4 @@
 interface:
   display_name: "抖音知识入库"
   short_description: "粘贴含“复制打开抖音”的分享口令即可自动提炼知识，分类入库并维护独立索引和日志"
-  default_prompt: "使用 $douyin-to-obsidian 提炼指定抖音视频、图文或收藏夹的知识点，按 /ki 的知识笔记方式整理概念、原理和实践方法，并保存到我的 Obsidian 知识库。"
+  default_prompt: "使用 $douyin-to-obsidian 提炼指定抖音视频、图文或收藏夹的知识点，整理概念、原理和实践方法，并保存到我的 Obsidian 知识库。"

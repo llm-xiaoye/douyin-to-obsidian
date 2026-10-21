@@ -468,7 +468,7 @@ def _skeleton_key(value):
 
 
 def validate_note_skeleton(body, title, analysis_data=None):
-    """New knowledge-note layout shared with dy-author (see references/knowledge-notes.md)."""
+    """Knowledge-note layout (see references/knowledge-notes.md)."""
     text = re.sub(r"\A# [^\n]+\n*", "", body.strip()).strip()
     blocks = markdown_blocks(text)
     if any(level == 1 for level, _, _ in blocks):

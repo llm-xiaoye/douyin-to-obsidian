@@ -268,7 +268,7 @@ def atomic_write(path, content, exclusive=False):
 
 @contextmanager
 def locked(vault):
-    # KI obtains this lock before its own lock too. Catalog writes are serialized.
+    # Serialize catalog writes before acquiring the note-store lock.
     with inside(vault, ".unified-catalog.lock").open("a") as shared:
         fcntl.flock(shared, fcntl.LOCK_EX)
         try:
@@ -365,7 +365,7 @@ def sync_unified_after_write(function):
 
 
 def author_front(author):
-    """Verified author identity only (same keys/order as dy-author); unknown authors are omitted."""
+    """Verified author identity only; unknown authors are omitted."""
     if not author:
         return {}
     nickname, sec_uid = author.get("nickname"), author.get("sec_uid")

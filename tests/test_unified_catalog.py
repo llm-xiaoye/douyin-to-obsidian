@@ -20,7 +20,7 @@ class UnifiedCatalogTest(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.dy = self.root
         (self.root / "知识库" / "AI" / "Agent" / "记忆管理").mkdir(parents=True)
-        (self.root / "知识库" / "AI" / "Agent" / "记忆管理" / "ki.md").write_text("# KI\n")
+        (self.root / "知识库" / "AI" / "Agent" / "记忆管理" / "existing.md").write_text("# Existing note\n")
         (self.root / "知识库" / "AI" / "Agent" / "记忆管理" / "dy.md").write_text("# DY\n")
         self.sources = {
             self.root / "_knowledge-index.md": """# 知识索引
@@ -29,13 +29,13 @@ class UnifiedCatalogTest(unittest.TestCase):
 
 | 文档 | type | 关键词 | 核心洞察 | 日期 |
 | --- | --- | --- | --- | --- |
-| [同题](知识库/AI/Agent/记忆管理/ki.md) | 教程 | agent | KI 观点 | 2026-09-25 |
+| [同题](知识库/AI/Agent/记忆管理/existing.md) | 教程 | agent | 已有观点 | 2026-09-25 |
 """,
             self.root / "_import-log.md": """# 导入日志
 
 | 时间 | 来源 URL | 写入路径 | 操作 |
 | --- | --- | --- | --- |
-| 2026-09-25 09:00:00 | https://example.com/ki | [知识库/AI/Agent/记忆管理/ki.md](知识库/AI/Agent/记忆管理/ki.md) | 新建 |
+| 2026-09-25 09:00:00 | https://example.com/existing | [知识库/AI/Agent/记忆管理/existing.md](知识库/AI/Agent/记忆管理/existing.md) | 新建 |
 """,
             self.dy / "DY-知识索引.md": """%% douyin:managed:start %%
 
@@ -79,7 +79,7 @@ class UnifiedCatalogTest(unittest.TestCase):
         self.assertFalse(catalog.rebuild(self.root)["changed"])
 
     def test_missing_historical_note_is_kept_without_broken_link(self):
-        (self.root / "知识库" / "AI" / "Agent" / "记忆管理" / "ki.md").unlink()
+        (self.root / "知识库" / "AI" / "Agent" / "记忆管理" / "existing.md").unlink()
         result = catalog.rebuild(self.root)
         self.assertEqual(result["missing_index_notes"], 1)
         self.assertIn("同题（原笔记缺失）", (self.root / catalog.INDEX_NAME).read_text())

@@ -1,4 +1,4 @@
-"""Shared topic tree for KI, DY, and the one-time vault migration.
+"""Topic tree for knowledge notes and explicit vault migration.
 
 The folder says what problem a note answers.  Source, format, and interview
 context are metadata, never physical categories.
@@ -22,8 +22,8 @@ def validate_category(category: list[str]) -> list[str]:
            for part in category):
         raise ValueError("主题目录名无效")
     if category[0] == "面试题库":
-        # 知识库/面试题库 is written only by dy-author (question documents, no aweme_id).
-        raise ValueError("面试题库由 dy-author 管理，/dy 知识笔记不能放入该目录")
+        # Knowledge notes must use semantic topic directories.
+        raise ValueError("/dy 知识笔记不能放入面试题库，请使用知识主题目录")
     if category[0] == ROOT or any(part in ("抖音", "KI", "DY", "视频", "文章", "面试") for part in category):
         raise ValueError("来源、媒体形式与面试不能作为主题目录")
     if category[:2] == ["AI", "Agent"]:

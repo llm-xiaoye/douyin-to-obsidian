@@ -1,6 +1,6 @@
 # 统一主题目录与显式整理
 
-配置中的 vault 是 Obsidian 根目录，notes_dir 为「知识库」，KI 与 DY 笔记按主题放在同一目录树。DY 的 index_file、log_file、review_state_file 位于 Vault 根目录，attachments_dir 指向通用 `附件/`；这些文件用于独立的作品查重、历史事件和复审，不要调用 /ki 的提交脚本。两边写入后共同刷新根目录总览。
+配置中的 vault 是 Obsidian 根目录，notes_dir 为「知识库」，笔记按主题放在目录树中。index_file、log_file、review_state_file 位于 Vault 根目录，attachments_dir 指向 `附件/`；这些文件用于作品查重、历史事件和复审，每次写入后刷新根目录总览。
 
 每次成功导入由 library.py 在本库文件锁内提交文章、索引、日志和隐藏的复审记录；先生成全部内容和恢复记录，失败回滚。索引按实际目录分组，条目使用知识标题；日志显示时间、操作、文章、分类、来源 URL、内容复审、复审时间。所有完整时间显示为 `YYYY-MM-DD HH:mm:ss`，沿用原记录的时间，不做时区换算；仅有日期的旧记录不虚构时分秒。可在索引/日志的 douyin:managed 管理区域外添加个人内容，脚本保留它们。相同作品再次导入不新增日志或改笔记。
 
