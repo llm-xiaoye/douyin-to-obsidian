@@ -513,10 +513,6 @@ def main():
                 elif args.command == "commit":
                     if frozen.get("vault") != config.get("vault") or frozen.get("notes_dir") != config.get("notes_dir"):
                         raise ValueError("批次创建于旧知识目录，请重新 init；禁止写回迁移前位置。")
-                    # Old prepared runs may predate the optional shared-view setting.
-                    # It affects only the post-commit view, not their frozen media inputs.
-                    if frozen.get("vault") == config.get("vault") and config.get("unified_root_vault"):
-                        frozen["unified_root_vault"] = config["unified_root_vault"]
                     result = commit(run, state, frozen, args.id)
                 elif args.command in ("skip", "fail"):
                     result = mark_item(run, state, args.id, "skipped" if args.command == "skip" else "failed")

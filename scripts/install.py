@@ -157,12 +157,12 @@ def install(args):
         raise ValueError("目标目录已存在且不是完整的受管安装；请保留现场并选择另一目录")
     python = destination / ".venv/bin/python"
     config = read_object(SOURCE / "config.example.json")
-    config.update(vault=str(vault), unified_root_vault=str(vault), python=str(python),
+    config.update(vault=str(vault), python=str(python),
                   cache_dir=str(cache), browser_profile=str(profile),
                   browser_cache_dir=str(browser_cache))
     if previous:
         old_config = read_object(destination / "config.json")
-        for key in ("vault", "unified_root_vault", "python", "cache_dir",
+        for key in ("vault", "python", "cache_dir",
                     "browser_profile", "browser_cache_dir"):
             if old_config.get(key) != config[key]:
                 raise ValueError(f"已有配置的 {key} 与本次参数不同；请显式编辑本地 config.json")

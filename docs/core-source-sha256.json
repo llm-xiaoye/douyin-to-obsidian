@@ -1,19 +1,19 @@
 {
-  "description": "Business script checksums for this revision. Standalone wording edits affect comments, docstrings and one validation message; processing logic is unchanged.",
+  "description": "Checksums of this revision's business scripts. Catalogs and validation are owned by this package.",
   "sha256": {
     "auto_route.py": "c2efb7ae7e44ca16561c9c36f7a3d9fab21788d63dccef304f0e19ab72ca6f53",
     "browser_cache.py": "4c8a5f537ea00400ab14176d98ae93f6bf5fa6ab0106eca5d27d964d32b9f4db",
     "collect_folders.py": "641fa64d564e7b9a4ea7d9c7bf4b9b922ff6e59981eb58982e61075828e2654d",
     "douyin_access.py": "076266709a68720de39d517f71fe7bc59c6d9cc9b5daab3fe526bb49d80b1263",
-    "dy.py": "d80825a250041b17e2fb5a8c0f8f5a93bd7eb9219e9c121031e0882a34cee774",
+    "dy.py": "4049a9d694b806e7a8c45ac150d14d27ee79233d7952a72e6ec3846a4374fc1c",
     "image_posts.py": "855a1bae6dc60a2e96a1e19c223ae281c4d6741fc5178c135182937e5e32c26d",
-    "library.py": "145a694b66327b13034a914eb99d879f0c27287419523ac36af91b5f96ac2649",
+    "library.py": "5f1f6375d2e6a8162ba3dc11d5da78e03a75c1c0ef2387318c73e170e65f0f68",
     "note_assets.py": "085fdd8751578f982d41665200cc1a7a11bce856746b90b08ea6a2d2bfb71734",
     "ocr_images.swift": "74b386441c10ed9c8619dd524cef3a8c8fce1bdfeee7763badfff25f47cf4b66",
     "pipeline.py": "8aebe97b0461a1fa015562d5eff9680c7f1e9eae9255ac077bee9e24a99c727b",
     "review_log.py": "140c21c24cfc79c096b3bb28471b84fcc404b0470bfaefda279e394519fc65bd",
-    "topic_taxonomy.py": "99da001886d7728b76aa0834ab23ffac74109cbf631d6952ac34c8a5c2e6e5a0",
-    "unified_catalog.py": "3b4f9ad13b0f1b546dfea89bd109466ac2bf01a43cb201b6be48658c57db85ab",
-    "unified_store.py": "0426f648684e3b08666f7c2500687caad3f3f45ef80b76edb16bcef4391ab539"
+    "topic_taxonomy.py": "3fa3bc4557afec5c940846b2d9b6ec55f5f47efe1edc380e66c2810327e7ca15",
+    "unified_catalog.py": "28221f041c709125f79f1275bab4b01fdbd0fbe2ea2e7bf61183dcf64c6c453a",
+    "unified_store.py": "1edba2be45a916990c7f4d5980172e3c461572e01f85404116e55e4d89e3ba82"
   }
 }

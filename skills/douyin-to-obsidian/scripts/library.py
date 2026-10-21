@@ -7,7 +7,6 @@ import base64
 from contextlib import contextmanager
 from datetime import datetime
 import fcntl
-from functools import wraps
 import hashlib
 import json
 import os
@@ -344,26 +343,6 @@ def transact(vault, changes):
     journal.unlink()
 
 
-def sync_unified_after_write(function):
-    """Refresh the cross-skill view only after the DY vault lock is released."""
-    @wraps(function)
-    def wrapped(config, *args, **kwargs):
-        result = function(config, *args, **kwargs)
-        if config.get("unified_only"):
-            return result
-        root = config.get("unified_root_vault")
-        changed = result.get("written") or result.get("status") in ("migrated", "reviewed") or bool(result.get("changed_files"))
-        if root and changed and Path(config["vault"]).expanduser().resolve() in (
-                Path(root).expanduser().resolve(), Path(root).expanduser().resolve() / "douyinknowledge"):
-            try:
-                from unified_catalog import rebuild
-                rebuild(root)
-            except (OSError, ValueError, UnicodeError, ImportError, KeyError, json.JSONDecodeError) as exc:
-                result["unified_sync_warning"] = str(exc)[:300]
-        return result
-    return wrapped
-
-
 def author_front(author):
     """Verified author identity only; unknown authors are omitted."""
     if not author:
@@ -375,7 +354,6 @@ def author_front(author):
     return {"douyin_author": name, "douyin_author_id": sec_uid}
 
 
-@sync_unified_after_write
 def save_note(config, vid, analysis, body, collections=(), images=(), source_url=None, author=None):
     vault = Path(config["vault"]).expanduser().resolve()
     analysis = validate_analysis(analysis, strict_topics=config.get("notes_dir") == "知识库")
@@ -402,7 +380,6 @@ def save_note(config, vid, analysis, body, collections=(), images=(), source_url
                 "index": str(index), "log": str(log), "written": True, "attachments": attachments}
 
 
-@sync_unified_after_write
 def revise_note(config, vid, analysis, body, expected_sha256, images=(), source_url=None):
     """Explicit content revision only; ordinary import still skips existing notes."""
     from note_assets import stage
@@ -441,7 +418,6 @@ def revise_note(config, vid, analysis, body, expected_sha256, images=(), source_
                 "index": str(index), "log": str(log), "written": True, "attachments": attachments}
 
 
-@sync_unified_after_write
 def record_review(config, vid, report, expected_sha256, evidence_sha256, source_url, is_image=False):
     """Register a real follow-up review; never infer one from import or formatting."""
     import review_log
@@ -476,7 +452,6 @@ def record_review(config, vid, report, expected_sha256, evidence_sha256, source_
                 "index": str(index), "log": str(log), "backup": str(backup), "written": True}
 
 
-@sync_unified_after_write
 def migrate(config, mapping):
     """Explicit user-authorized reformatting, never part of an ordinary /dy update."""
     vault = Path(config["vault"]).resolve()
@@ -548,7 +523,6 @@ def catalog(config):
             "notes": [{k: r.get(k) for k in ("path", "title", "tags", "insight")} for r in rows]}
 
 
-@sync_unified_after_write
 def refresh_metadata(config):
     """Repair index/log rendering without importing items or touching articles."""
     vault = Path(config["vault"]).expanduser().resolve()

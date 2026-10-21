@@ -1,6 +1,5 @@
 {
   "vault": "/absolute/path/to/YourVault",
-  "unified_root_vault": "/absolute/path/to/YourVault",
   "cache_dir": "/absolute/path/to/YourCache",
   "python": "/absolute/path/to/installed/skill/.venv/bin/python",
   "browser": "chrome",

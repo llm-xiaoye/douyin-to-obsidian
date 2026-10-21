@@ -25,8 +25,8 @@ class LibraryTests(unittest.TestCase):
         self.vault = self.root / 'dy'
         self.vault.mkdir()
         self.config = {'vault': str(self.vault), 'cache_dir': str(self.root/'cache'), 'notes_dir': '抖音'}
-        self.ki = self.root / '_knowledge-index.md'
-        self.ki.write_text('Unrelated KI index')
+        self.unrelated_index = self.root / '_knowledge-index.md'
+        self.unrelated_index.write_text('Unrelated user index')
 
     def save(self, config, vid, analysis, body):
         return library.save_note(config, vid, analysis, body,
@@ -47,7 +47,7 @@ class LibraryTests(unittest.TestCase):
         snapshot = {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in self.vault.rglob('*.md')}
         self.assertEqual(self.save(self.config, A, ANALYSIS, 'Replacement')['status'], 'exists')
         self.assertEqual(snapshot, {p: (p.read_bytes(), p.stat().st_mtime_ns) for p in self.vault.rglob('*.md')})
-        self.assertEqual(self.ki.read_text(), 'Unrelated KI index')
+        self.assertEqual(self.unrelated_index.read_text(), 'Unrelated user index')
         second = self.save(self.config, B, ANALYSIS, 'Another work with the same topic.')
         self.assertTrue(second['note'].endswith('记忆的状态与历史-2.md'))
 
@@ -165,7 +165,7 @@ class LibraryTests(unittest.TestCase):
         self.assertIn(new.relative_to(self.vault).with_suffix('').as_posix(), relation.read_text())
         saved = json.loads((Path(result['backup'])/'before.json').read_text())
         self.assertIn('00:00', base64.b64decode(saved['抖音/视频/'+A+'.md']).decode())
-        self.assertEqual(self.ki.read_text(), 'Unrelated KI index')
+        self.assertEqual(self.unrelated_index.read_text(), 'Unrelated user index')
 
     def test_failed_index_write_rolls_back_note_and_metadata(self):
         self.save(self.config, A, ANALYSIS, 'Existing content')

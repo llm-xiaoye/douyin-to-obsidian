@@ -133,7 +133,7 @@ ok 为 true 表示本机依赖、路径和集成检查通过。doctor 不读取 
 
 | 配置项 | 用途 / 默认值 |
 | --- | --- |
-| vault、unified_root_vault | 同一个 Obsidian 根目录，由 --vault 生成 |
+| vault | Obsidian 根目录，由 --vault 生成 |
 | python | 安装内 .venv/bin/python，由安装器生成 |
 | cache_dir | 运行批次、媒体、识别结果和恢复记录；可用 --cache-dir 指定 |
 | browser、browser_profile | chrome 及你的完整 Profile 目录 |

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""KI/DY's two visible Markdown catalogs as their shared source of truth."""
+"""Read and update the skill's knowledge index and import history."""
 from __future__ import annotations
 
 import hashlib
@@ -118,7 +118,7 @@ def _read_log(raw: str) -> list[list[str]]:
     lines = raw.splitlines()
     if not lines or lines[0] != "# 导入总日志":
         raise ValueError("导入总日志标题无效")
-    declared = re.search(r"^共 (\d+) 条：KI (\d+) 条，DY (\d+) 条。", raw, re.M)
+    declared = re.search(r"^共 (\d+) 条(?:[：。].*)?$", raw, re.M)
     if not declared:
         raise ValueError("导入总日志计数缺失")
     header, rows = None, []
@@ -134,7 +134,7 @@ def _read_log(raw: str) -> list[list[str]]:
                 if not header or len(row) != len(header):
                     raise ValueError("导入总日志分隔行位置无效")
             else:
-                if not header or len(row) != len(header) or row[1] not in ("KI", "DY") or not re.match(r"^\d{4}-\d{2}-\d{2}", row[0]):
+                if not header or len(row) != len(header) or not row[1] or not re.match(r"^\d{4}-\d{2}-\d{2}", row[0]):
                     raise ValueError("导入总日志事件结构无效")
                 # Two historical rows have no live note link. Keep their cells verbatim.
                 if row[3].startswith("["):
@@ -142,7 +142,7 @@ def _read_log(raw: str) -> list[list[str]]:
                 rows.append(log_row(row))
         elif line and not (line.startswith("共 ") or line.startswith("原始记录：") or line.startswith("其中 ")):
             raise ValueError("导入总日志包含未识别的正文，未覆盖")
-    if (len(rows), sum(row[1] == "KI" for row in rows), sum(row[1] == "DY" for row in rows)) != tuple(map(int, declared.groups())):
+    if len(rows) != int(declared.group(1)):
         raise ValueError("导入总日志事件计数不符")
     return rows
 
@@ -170,9 +170,8 @@ def render_index(rows: list[dict]) -> bytes:
 
 def render_log(rows: list[list[str]]) -> bytes:
     rows = [log_row(row) for row in rows]
-    ki_count = sum(row[1] == "KI" for row in rows)
     lines = ["# 导入总日志", "",
-             f"共 {len(rows)} 条：KI {ki_count} 条，DY {len(rows) - ki_count} 条。按时间由近到远排列。", "",
+             f"共 {len(rows)} 条。按时间由近到远排列。", "",
              "| " + " | ".join(LOG_HEADERS) + " |", "| " + " | ".join(["---"] * len(LOG_HEADERS)) + " |"]
     for row in sorted(rows, key=lambda item: item[0], reverse=True):
         lines.append("| " + " | ".join(row) + " |")
@@ -182,32 +181,6 @@ def render_log(rows: list[list[str]]) -> bytes:
 def validate_rendered(index: bytes, log: bytes, index_count: int, log_count: int) -> None:
     if len(_read_index(index.decode("utf-8"))) != index_count or len(_read_log(log.decode("utf-8"))) != log_count:
         raise ValueError("总览写入前回读计数不符")
-
-
-def find_ki_url(vault: Path, url: str) -> str | None:
-    _, logs = load(vault)
-    for row in logs:
-        if row[1] == "KI" and plain(row[5]) == url:
-            relative = link_path(row[3])
-            if relative and (vault / relative).is_file():
-                return relative
-    return None
-
-
-def ki_changes(vault: Path, meta: dict, relative: str, timestamp: str, url: str, action: str) -> dict[Path, bytes]:
-    index, logs = load(vault)
-    if not relative.startswith("知识库/") or not relative.endswith(".md"):
-        raise ValueError("KI 笔记目录无效")
-    tags = " ".join(chr(96) + escape(tag) + chr(96) for tag in meta["tags"])
-    cells_value = [note_link(meta["title"], relative), escape(meta["type"]), tags,
-                   escape(meta["insight"]), escape(meta["article_date"])]
-    index = [row for row in index if row["path"] != relative]
-    index.append({"path": relative, "cells": cells_value})
-    logs.append([timestamp, "KI", action, note_link(meta["title"], relative),
-                 escape(topic(relative)), escape(url), "—", escape(meta.get("author_name", ""))])
-    index_raw, log_raw = render_index(index), render_log(logs)
-    validate_rendered(index_raw, log_raw, len(index), len(logs))
-    return {vault / INDEX_NAME: index_raw, vault / LOG_NAME: log_raw}
 
 
 def dy_changes(vault: Path, config: dict, changes: dict, events: list[dict],
@@ -287,7 +260,6 @@ def check(vault: Path) -> dict:
     index, logs = load(vault)
     missing = sum(not (vault / row["path"]).is_file() for row in index)
     return {"status": "ok", "changed": False, "index_count": len(index),
-            "log_count": len(logs), "ki_log_count": sum(row[1] == "KI" for row in logs),
-            "dy_log_count": sum(row[1] == "DY" for row in logs),
+            "log_count": len(logs),
             "missing_index_notes": missing, "index": str(vault / INDEX_NAME),
             "log": str(vault / LOG_NAME)}

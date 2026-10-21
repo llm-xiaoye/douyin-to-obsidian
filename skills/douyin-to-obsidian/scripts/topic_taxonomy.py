@@ -24,7 +24,7 @@ def validate_category(category: list[str]) -> list[str]:
     if category[0] == "面试题库":
         # Knowledge notes must use semantic topic directories.
         raise ValueError("/dy 知识笔记不能放入面试题库，请使用知识主题目录")
-    if category[0] == ROOT or any(part in ("抖音", "KI", "DY", "视频", "文章", "面试") for part in category):
+    if category[0] == ROOT or any(part in ("抖音", "DY", "视频", "文章", "面试") for part in category):
         raise ValueError("来源、媒体形式与面试不能作为主题目录")
     if category[:2] == ["AI", "Agent"]:
         if len(category) < 3 or category[2] not in AGENT:

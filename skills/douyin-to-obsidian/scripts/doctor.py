@@ -32,17 +32,15 @@ def inspect(config_path, workspace=None):
     except (OSError, ValueError) as exc:
         record("config", False, str(exc))
         return checks
-    required = ["vault", "unified_root_vault", "cache_dir", "python", "browser",
+    required = ["vault", "cache_dir", "python", "browser",
                 "browser_profile", "browser_cache_dir", "notes_dir", "attachments_dir"]
     missing = [key for key in required if not isinstance(config.get(key), str) or not config[key]]
     record("required_configuration", not missing, {"missing": missing})
     if missing:
         return checks
-    for key in ("vault", "unified_root_vault", "cache_dir", "browser_profile", "browser_cache_dir"):
+    for key in ("vault", "cache_dir", "browser_profile", "browser_cache_dir"):
         path = Path(config[key]).expanduser()
         record(key, path.is_absolute() and path.is_dir(), str(path))
-    record("vault_binding", Path(config["vault"]).expanduser().resolve() ==
-           Path(config["unified_root_vault"]).expanduser().resolve(), "two Vault fields must match")
     record("vault_permissions", os.access(Path(config["vault"]).expanduser(), os.R_OK | os.W_OK | os.X_OK),
            "checks access flags without writing notes")
     for key in ("notes_dir", "attachments_dir"):
